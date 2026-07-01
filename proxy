@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+compose() {
+  if docker compose version >/dev/null 2>&1; then
+    docker compose "$@"
+  else
+    docker-compose "$@"
+  fi
+}
+
+case "${1:-up}" in
+  up)
+    compose down || true
+    compose up -d --force-recreate
+    compose ps
+    ;;
+  stop)
+    compose down
+    ;;
+  *)
+    echo "Usage: ./proxy [up|stop]" >&2
+    exit 1
+    ;;
+esac
